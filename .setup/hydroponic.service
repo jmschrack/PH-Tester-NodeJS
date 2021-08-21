@@ -1,0 +1,14 @@
+[Unit]
+Description=Hydroponic status API
+Documentation=jmschrack.dev
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/local/bin/node /home/pi/web/index.js
+WorkingDirectory=/home/pi/web
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
