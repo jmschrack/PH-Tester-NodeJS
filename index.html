@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+	<head>
+		<title>Hydroponic Dashboard</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="w3.css">
+		<script type="text/javascript">
+			function GetpH(){
+				const lb=document.getElementById('ph-bar');
+				let prog=0;
+				lb.style.width="0%";
+				const lbInterval = setInterval(function(){prog+=((1.0/6.0)*100);lb.style.width=prog.toFixed(2)+"%";console.log(prog.toFixed(2)+"%");},1000);
+				fetch('api/pH').then( data =>{
+					data.text().then(t=>{
+						document.getElementById('ph-panel').innerText='pH:'+t;
+						clearInterval(lbInterval);
+					});
+				});
+			}
+			
+		</script>
+	</head>
+	<body onload='GetpH()'>
+		<div class="w3-container">
+			<div class="w3-panel w3-card">
+				<p id="ph-panel">pH:</p>
+				<button onclick='GetpH()'>Check again</button>
+				<div class="w3-border">
+  					<div class="w3-grey" id='ph-bar' style="height:24px;width:0%"></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

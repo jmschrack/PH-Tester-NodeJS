@@ -5,16 +5,19 @@ const app = express();
 const {Arduino} = require('./arduino.js')
 const arduino = new Arduino('/dev/ttyACM0');
 
+app.use(express.static('public'));
 
-app.get('/', (req,res)=>{
-	console.log(' entered /');
-	//res.send('Hello World!');
+app.get('/api/pH', (req,res)=>{
 	Get_pH_avg().then(data=>{
-		res.send('Current pH:'+data.toFixed(2));
+		res.send(data.toFixed(2));
 	}).catch(err=>{
 		res.send('Error?');
 		console.log(err);
 	});
+});
+
+app.get('/', (req,res)=>{
+	res.sendFile(__dirname+'/index.html');
 });
 
 app.listen(process.env.port, ()=>{
