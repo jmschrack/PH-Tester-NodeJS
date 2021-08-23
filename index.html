@@ -18,8 +18,51 @@
 			}
 			
 		</script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script>
+  // === include 'setup' then 'config' above ===
+			let labels = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+];
+			const data = {
+			  labels: labels,
+			  datasets: [{
+				    label: 'pH Over Time',
+				    backgroundColor: 'rgb(255, 99, 132)',
+				    borderColor: 'rgb(255, 99, 132)',
+				    data: [0, 10, 5, 2, 20, 30, 45],
+  				}]
+			};
+			
+			const config = {
+			  type: 'line',
+			  data: data,
+			  options: {}
+			};
+
+			function CreatepHChart(){
+				fetch('api/ph-history').then(res=>{
+					res.json().then(rdata=>{
+						data.datasets[0].data=rdata.map(value=>{
+							return value.pH;
+						});
+						data.labels=rdata.map(value=>{
+							return new Date(value.time).toLocaleTimeString();	
+						});
+
+						const myChart= new Chart(document.getElementById('pHChart'),config);
+					});
+				});
+			}
+		</script>
+
 	</head>
-	<body onload='GetpH()'>
+	<body onload='GetpH();CreatepHChart();'>
 		<div class="w3-container">
 			<div class="w3-panel w3-card">
 				<p id="ph-panel">pH:</p>
@@ -27,6 +70,9 @@
 				<div class="w3-border">
   					<div class="w3-grey" id='ph-bar' style="height:24px;width:0%"></div>
 				</div>
+			</div>
+			<div class="w3-panel">
+				<canvas id="pHChart" onload="CreatepHChart"></canvas>
 			</div>
 		</div>
 	</body>

@@ -4,6 +4,10 @@ console.log(__dirname);
 const app = express();
 const {Arduino} = require('./arduino.js')
 const arduino = new Arduino('/dev/ttyACM0');
+const cron = require('node-cron');
+
+const pHRecords=[];
+const maxRecords=96;
 
 app.use(express.static('public'));
 
@@ -14,6 +18,10 @@ app.get('/api/pH', (req,res)=>{
 		res.send('Error?');
 		console.log(err);
 	});
+});
+
+app.get('/api/pH-history',(req,res)=>{
+	res.send(JSON.stringify(pHRecords));
 });
 
 app.get('/', (req,res)=>{
@@ -67,6 +75,17 @@ function Get_pH_avg(){
 		arduino.send('read_data');
 	});
 }
+
+cron.schedule('*/15 * * * *', () => {
+//  console.log('running a task every two minutes');
+	Get_pH().then(data=>{
+		pHRecords.push({time:Date.now(),pH:data});
+		if(pHRecords.length>maxRecords){
+			pHRecords.shift();
+		}
+	});
+});
+
 
 
 console.log('Pinging Arduino');
