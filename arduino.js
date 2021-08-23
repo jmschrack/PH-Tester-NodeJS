@@ -31,6 +31,18 @@ class Arduino extends EventEmitter {
 			//console.log('Arduino::send:'+msg);
 			this.port.write(msg);
 		}
+		this.streamCount=0;
+		this.enableStream=function(){
+			if(this.streamCount<1)
+				this.send('read_data');
+			this.streamCount++;
+		}
+		this.disableStream=function(){
+			this.streamCount--;
+			if(this.streamCount<1)
+				this.send('stop_data');
+		}
+
 	}
 }
 

@@ -7,7 +7,7 @@ const arduino = new Arduino('/dev/ttyACM0');
 const cron = require('node-cron');
 
 const pHRecords=[];
-const maxRecords=96;
+const maxRecords=24*12;
 
 app.use(express.static('public'));
 
@@ -65,18 +65,18 @@ function Get_pH_avg(){
 				if(count>5){
 					//console.log('Sum_pH::removing listener');
 					arduino.removeListener('pH',Sum_pH);
-					arduino.send('stop_data');
+					arduino.disableStream();
 					resolve(pH/count);
 				}
 			}catch(err){reject(err);}
 		}
 		//console.log('sending read_data');
 		arduino.on('pH',Sum_pH);
-		arduino.send('read_data');
+		arduino.enableStream();
 	});
 }
 
-cron.schedule('*/15 * * * *', () => {
+cron.schedule('*/5 * * * *', () => {
 //  console.log('running a task every two minutes');
 	Get_pH().then(data=>{
 		pHRecords.push({time:Date.now(),pH:data});
